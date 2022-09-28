@@ -1,42 +1,35 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import Palettes from "./components/Palette/Palettes";
-import Tags from "./components/Tag/Tags";
-import Favorites from "./components/Favorite/Favorites";
-import { getColorPalettes, getTags } from "./service";
-import { FavoritesContext } from "./context/FavoriteContext";
+import { Routes, Route } from "react-router-dom";
+import Home from "./routes/home/Home";
+import PaletteDisplay from "./routes/palette/PaletteDisplay";
+import { getColorPalettes } from "./service";
+import { ColorPalettesContext } from "./context/ColorPalettesContext";
 
 function App() {
   const [colorPalettes, setColorPalettes] = useState([]);
-  const [tags, setTags] = useState([]);
-  const [favorites, setFavorites] = useState([]);
 
+  // Obtengo la lista de paletas del service
   useEffect(() => {
     getColorPalettes()
       .then((data) => {
         setColorPalettes(data);
-        setFavorites((data) => data.filter((palette) => palette.liked));
       })
-      .catch((err) => console.log(err));
-
-    getTags()
-      .then((data) => setTags(data))
       .catch((err) => console.log(err));
   }, []);
 
+  // Se provee del contexto a la aplicacion y paso la lista de paletas y su funcion set mediante el context
   return (
-    <FavoritesContext.Provider value={{ favorites, setFavorites }}>
-      <div className="App">
-        <header>
-          <h1>Color Palette Project</h1>
-        </header>
-        <div className="main-container">
-          <Tags tags={tags} />
-          <Palettes palettes={colorPalettes} />
-          <Favorites favorites={favorites} />
-        </div>
-      </div>
-    </FavoritesContext.Provider>
+    <div className="App">
+      <ColorPalettesContext.Provider
+        value={{ colorPalettes, setColorPalettes }}
+      >
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/palette/:id" element={<PaletteDisplay />} />
+        </Routes>
+      </ColorPalettesContext.Provider>
+    </div>
   );
 }
 

@@ -1,6 +1,6 @@
-import React from "react";
-import { useContext, useState } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { useContext, useState } from "react";
+import { Link } from "react-router-dom";
 import { FavoritesContext } from "../../context/FavoriteContext";
 import "./Palette.css";
 
@@ -9,44 +9,53 @@ const Palette = ({ palette }) => {
   const { favorites, setFavorites } = useContext(FavoritesContext);
   const [isFavorite, setIsFavorite] = useState(liked);
 
+  //TODO tienes que modificar el "like" en la paleta
   const handleFavorite = () => {
     setIsFavorite((isFavorite) => !isFavorite);
 
-    // Buscar si la paleta ya esta en favoritos
-    const founIndex = favorites.findIndex((fav) => fav.id === id);
+    //busco si la paleta ya esta en favoritos
+    const foundIndex = favorites.findIndex((fav) => fav.id === id);
 
-    // Agregar a favoritos
-    if (founIndex === -1) {
+    //para agregar a favoritos
+    if (foundIndex === -1) {
       setFavorites([...favorites, palette]);
       return;
     }
 
-    // Quitar de favoritos
-    setFavorites(favorites.filter((fav) => fav.id !== id));
+    //Quitar de favoritos
+    setFavorites(
+      favorites.filter((fav) => fav.id !== id) //!==
+    );
+  };
+
+  const copyToClipboard = (value) => {
+    navigator.clipboard.writeText(value);
   };
 
   return (
     <div className="palette-container">
       <div className="palette">
         <h3>{name}</h3>
-        {colors.map((color) => {
+        {colors.map((color, index) => {
           return (
             <div
-              key={color}
-              className="color"
+              key={index}
+              className={`color c${index}`}
               style={{ backgroundColor: color }}
+              onClick={() => copyToClipboard(color)}
             >
-              <span>{color}</span>
+              <div className="hex-code">{color}</div>
             </div>
           );
         })}
       </div>
-      <div className="fav">
-        {isFavorite ? (
-          <FaHeart className="fav heart" onClick={handleFavorite} />
-        ) : (
-          <FaRegHeart className="fav" onClick={handleFavorite} />
-        )}
+      <div className="palette-actions">
+        <div className="fav" onClick={handleFavorite}>
+          {isFavorite ? <FaHeart className="heart" /> : <FaRegHeart />}
+        </div>
+        <Link className="btn-see-more" to={`/palette/${id}`}>
+          Ver más
+        </Link>
       </div>
     </div>
   );

@@ -1,0 +1,17 @@
+header {
+    padding: 50px;
+  }
+  
+  .main-container {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  header {
+    padding: 0px;
+  }
+  
+  .logo {
+    height: 150px;
+    width: auto;
+  }
